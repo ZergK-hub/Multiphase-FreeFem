@@ -146,10 +146,12 @@ $c_t= c_r + c_w  S_w + c_o (1-S_w)$ --- полная сжимаемость си
 где $f_w$ --- функция Баклея~---~Леверетта.
 
 В этих терминах основные уравнения записываются в следующем виде:
-\begin{equation}
+\begin{equation}\label{eq:diffusion}
     c_t\phi \pd{p}{t}
-    + \dv\, \left( \bq_t \right) = q_w + q_o, \quad \bm{q}_{t} = - K \lambda_t \nabla p,
+    + \dv\, \left( \bq_t \right) = q_w + q_o, \quad \bq_t = - K \lambda_t \nabla p,
 \end{equation}
+
+
 
 \begin{equation}\label{eq:satur}
 	\phi \pd{S_w}{t} + S_w\phi\left(c_r + c_w \right)\pd{p}{t} + \dv\, \left( f_w \bq_t \right) = 
@@ -206,24 +208,49 @@ $c_t= c_r + c_w  S_w + c_o (1-S_w)$ --- полная сжимаемость си
 Для получения слабой формулировки воспользуемся общим алгоритмом метода взвешенных невязок 
 (\cite{Zenkevich_1986} стр.59 ур.(2.41)). В общем случае полагается, что системы весовых
 функций для области $\Omega$ и границы $\Gamma$ отличаются, тогда
- \begin{equation}
+ \begin{equation}\label{eq:residuals}
 	\int\limits_\Omega \xi R_\Omega \,d\Omega + \int\limits_\Gamma \overline{\xi}R_\Gamma \,d\Gamma = 0
  \end{equation} 
-В качестве тестовой функции для давления выберем $\xi$, при этом 
+Поскольку внутри расчетной области $\Omega$ отсутствуют источники и стоки для фильтрующихся фаз,
+то в уравнении на давлениие \refeq{eq:diffusion} правая часть равна нулю. В этом случае выражения для невязок 
+по области и по границе примут следующий вид:
 \begin{equation}
-	\xi\left|_{\Gamma_L}\right. = 0.
+	\begin{aligned}
+		R_\Omega &= c_t\phi \pd{p}{t} + \dv\, \left( \bq_t \right)\\
+		R_\Gamma &= \bq_t - \overline{\bm{q}}_{\alpha}
+	\end{aligned}
 \end{equation}
+ %В качестве тестовой функции для давления выберем $\xi$, при этом 
+%\begin{equation}
+%	\xi\left|_{\Gamma_L}\right. = 0.
+%\end{equation}
 
-Тогда 
+Тогда уравнение \refeq{eq:residuals} перепишется как:
+
+\begin{equation}
+	\displaystyle 0=\int\limits_\Omega  (c_t\phi \pd{p}{t} + \dv{\bq_t}) \,\xi \,dx dy
+	+ \int\limits_{\Gamma} (\bq_t - \overline{\bm{q}}_{\alpha})\cdot \bn \, \overline{\xi} \,ds
+\end{equation}
+В полученном выражении примем, что
+\begin{equation}
+	\overline{\xi} = -\xi.
+\end{equation}
+Тогда, если применить теорему Грина (интегрирование по частям), то можно ослабить требования к гладкости
+искомой функции и получить т.н. "слабую формулировку" для уравнения  диффузии 
 
 \begin{multline}
 	\displaystyle 0=\int\limits_\Omega c_t\phi \pd{p}{t}\, \xi \,dx dy 
-	 + \int\limits_\Omega \dv{\bq_t}\, \xi \,dx dy= \\ 
+	 + \int\limits_\Omega \dv{\bq_t}\, \xi \,dx dy
+	 - \int\limits_{\Gamma} \bq_t\cdot \bn \, \xi \,ds 
+	 + \int\limits_{\Gamma} \overline{\bm{q}}_{\alpha}\cdot \bn \, \xi \,ds = \\ 
 	 \int\limits_\Omega c_t\phi \pd{p}{t}\, \xi \,dx dy 
 	 + \int\limits_\Omega K \lambda_t \nabla p \cdot \nabla\xi \,dx dy \\
 	 +\int\limits_{\Gamma_L} (\bq_t \cdot \bn) \xi \, ds
 	 +\int\limits_{\Gamma_T\cup \Gamma_B} (\bq_t \cdot \bn) \xi \, ds
-	 +\int\limits_{\Gamma_R} (\bq_t \cdot \bn) \xi \, ds= \\
+	 +\int\limits_{\Gamma_R} (\bq_t \cdot \bn) \xi \, ds \\
+	 -\int\limits_{\Gamma_L} (\bq_t \cdot \bn) \xi \, ds
+	 -\int\limits_{\Gamma_T\cup \Gamma_B} (\bq_t \cdot \bn) \xi \, ds
+	 -\int\limits_{\Gamma_R} (\bq_t \cdot \bn) \xi \, ds = \\
 	 \int\limits_\Omega c_t\phi \pd{p}{t}\, \xi \,dx dy 
 	 + \int\limits_\Omega K \lambda_t \nabla p \cdot \nabla\xi \,dx dy -\int\limits_{\Gamma_L} q_{inj} \xi \, ds \\
 \end{multline}
