@@ -1,0 +1,148 @@
+\documentclass[a4paper, 14pt, twoside]{article}
+\usepackage[14pt]{extsizes}
+\usepackage[english,russian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsfonts, amsmath, amssymb,amsthm, graphics,latexsym}
+\usepackage{color}
+\usepackage{wasysym}
+\usepackage{misccorr}
+\usepackage{mathrsfs}
+\usepackage[active]{srcltx}
+\usepackage{amsthm,fullpage}
+\usepackage{fullpage}
+\usepackage{multicol}
+\usepackage[pdftex]{graphicx}
+\usepackage[square, numbers]{natbib}
+%\usepackage{fancyhrd}
+%\usepackage{morefloats}
+\usepackage{caption}
+\usepackage{xcolor}
+\usepackage{ifthen}
+\usepackage{verbatim}
+\usepackage{makeidx}
+\usepackage{enumerate}
+\usepackage{float}
+\usepackage{graphicx,fancybox}
+\usepackage{bm}
+%\usepackage{indentfirst}
+% \usepackage{commath}
+
+\usepackage{hyperref} % For \url command
+
+\usepackage{mathtools} % for def over equal sign command
+
+\usepackage[makeroom,thicklines]{cancel} % For commands to cross-out math symbols. See http://tex.stackexchange.com/questions/75525/how-to-write-crossed-out-math-in-latex
+
+\usepackage[left=3cm,right=2cm,
+    top=3cm,bottom=3cm,bindingoffset=0cm]{geometry}
+    
+\usepackage{empheq} % for empheq environment
+    
+%\fontsize{14}{16pt}\selectfont \sloppy \allowdisplaybreaks
+%%\renewcommand{\baselinestretch}{1.5}
+%\sloppy
+
+
+%%%%%%%%%%%%%%%%%% COLORS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand{\CancelColor}{\color{red}} % Color for canceling terms in expression
+
+% Command for text highlighting
+% Usegae:
+%       \highlight{text}{color}
+\newcommand{\highlight}[2]{
+    \textbf{\color{#2}#1}}  % 
+
+\newcommand{\todo}[1]{\textbf{\color{red}#1}}
+
+%%%%%%%%%%%%%%%%%% MATH OPERATORS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\DeclareMathOperator\dv{div} % divegence
+\DeclareMathOperator\id{I}   % identity matrix
+\DeclareMathOperator\tr{tr}  % trace operator
+\DeclareMathOperator{\E}{E}  % Large strain tensor
+\DeclareMathOperator{\const}{const} % const value 
+\DeclareMathOperator{\rank}{rk}
+%%%%%%%%%%%%%%%%%% BOLD SYMBOLS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\bX}{\mathbf{X}}  % bold X
+\newcommand{\bv}{\bm{v}}  % bold v
+\newcommand{\bu}{\mathbf{u}}  % bold u
+\newcommand{\bw}{\mathbf{w}}  % bold w
+\newcommand{\bq}{\mathbf{q}}  % bold q
+\newcommand{\bx}{\mathbf{x}}  % bold x
+\newcommand{\be}{\mathbf{e}}  % bold e
+\newcommand{\bs}{\mathbf{s}}  % bold s
+\newcommand{\bn}{\mathbf{n}}  % bold n
+\newcommand{\bp}{\mathbf{p}}  % bold p
+\newcommand{\bff}{\mathbf{f}}  % bold f
+\newcommand{\bc}{\mathbf{c}}  % bold c
+\newcommand{\bbf}{\mathbf{f}}  % bold f
+\newcommand{\bt}{\mathbf{t}} % bold T
+
+\newcommand{\bD}{\mathbf{D}}  % bold D
+\newcommand{\bP}{\mathbf{P}}  % bold P
+\newcommand{\bcu}{\mathbf{U}} % bold U
+\newcommand{\bct}{\mathbf{T}} % bold T
+
+\newcommand{\bpsi}{\boldsymbol{\psi}} % bold psi
+\newcommand{\bsigma}{\boldsymbol{\sigma}} % bold sigma
+\newcommand{\btau}{\bm{\tau}} % bold tau
+%%%%%%%%%%%%%%%%%% CALLIGRAPHIC SYMBOLS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\epss}{{\cal E}}
+\newcommand{\cL}{{\cal L}}
+\newcommand{\cT}{{\cal T}}
+\newcommand{\cQ}{{\cal Q}}
+
+%%%%%%%%%%%%%%%%%% DIFFERENTIAL OPERATORS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\pd}[2]{ % partial first derivative
+   \dfrac{\partial #1}{\partial #2}
+} 
+\newcommand{\opd}[2]{ % ordinary first derivative
+    \dfrac{\mathrm{d} #1}{\mathrm{d} #2}
+}
+\newcommand{\pddB}[2]{ % partial first derivative with function bordered by braces
+    \dfrac{\partial }{\partial #2}\Bigl(#1\Bigr)
+} 
+\newcommand{\pdd}[3]{ % partial second mixed derivative
+    \dfrac{\partial^2 #1}{\partial #2 \partial #3}
+}
+
+\newcommand{\pddfirst}[2]{ % partial second derivative with respect to one variable
+    \frac{\partial^2 #1}{\partial {#2}^2}
+}
+
+%%%%%%%%%%%%%%%%%% NEW COMMANDS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand\myeq{\stackrel{\mathclap{\footnotesize \mbox{def}}}{=}}
+
+%%%%%%%%%%%%%%%%%% RENEW COMMANDS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand{\leq}{\leqslant} % Beautiful <=
+\renewcommand{\geq}{\geqslant} % Beautiful >=
+
+%%%%%%%%%%%%%%%%%% THEOREM STYLES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\theoremstyle{definition}
+\newtheorem{Lemma1}{Лемма}
+\theoremstyle{definition}
+\newtheorem{Problem}{Задача}
+\newtheorem{Definition}{Определение}
+
+\theoremstyle{remark}
+\newtheorem*{Solution}{РЕШЕНИЕ}
+\newtheorem*{Tip}{ПОДСКАЗКА}
+
+%%%%%%%%%%%%%%%%%% PATHS TO FOLDERS WITH IMAGES %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\graphicspath{{img/}}
+
+%%%%%%%%%%%%%%%%%% OTHER CUSTOMIZATIONS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\everymath{\displaystyle} % Make all maths looks good
+
+\DeclareMathOperator{\diver}{div}
+\DeclareMathOperator\arctanh{arctanh}
+
+
+%\textheight 240mm
+%\textwidth 16cm
+%\topmargin -15mm %было-15mm
+%\multlinegap=0pt
+\author{Калинин С.А., Кузнецов В.А., Стамлер К.В.}
+
+%\title{Семинары по <<Введению в МСС>>}
+
+
