@@ -207,7 +207,8 @@ $c_t= c_r + c_w  S_w + c_o (1-S_w)$ --- полная сжимаемость си
 \subsubsection{Уравнение фильтрации}
 Для получения слабой формулировки воспользуемся общим алгоритмом метода взвешенных невязок 
 (\cite{Zenkevich_1986} стр.59 ур.(2.41)). В общем случае полагается, что системы весовых
-функций для области $\Omega$ и границы $\Gamma$ отличаются, тогда
+функций для области $\Omega$ и границы $\Gamma$ отличаются и требуется приравнять нулю 
+взвешенную сумму невязок внутри области и на границе, тогда
  \begin{equation}\label{eq:residuals}
 	\int\limits_\Omega \xi R_\Omega \,d\Omega + \int\limits_\Gamma \overline{\xi}R_\Gamma \,d\Gamma = 0
  \end{equation} 
@@ -250,10 +251,18 @@ $c_t= c_r + c_w  S_w + c_o (1-S_w)$ --- полная сжимаемость си
 	 +\int\limits_{\Gamma_R} (\bq_t \cdot \bn) \xi \, ds \\
 	 -\int\limits_{\Gamma_L} (\bq_t \cdot \bn) \xi \, ds
 	 -\int\limits_{\Gamma_T\cup \Gamma_B} (\bq_t \cdot \bn) \xi \, ds
-	 -\int\limits_{\Gamma_R} (\bq_t \cdot \bn) \xi \, ds = \\
-	 \int\limits_\Omega c_t\phi \pd{p}{t}\, \xi \,dx dy 
-	 + \int\limits_\Omega K \lambda_t \nabla p \cdot \nabla\xi \,dx dy -\int\limits_{\Gamma_L} q_{inj} \xi \, ds \\
+	 -\int\limits_{\Gamma_R} (\bq_t \cdot \bn) \xi \, ds 
+	 +\int\limits_{\Gamma} \overline{\bm{q}}_{\alpha}\cdot \bn \, \xi \, ds\\ 
 \end{multline}
+
+Значения $\overline{\bm{q}}_{\alpha}$ всюду равны нулю на границе, кроме отдельных узлов (
+нижний левый и верхний правый узлы), а интегралы, содержащие $(\bq_t \cdot \bn)$ сократятся
+при условии $\overline{\xi} = -\xi$, поэтому окончательно для уравнения фильтрации получим
+
+\begin{equation}
+	0=\int\limits_\Omega c_t\phi \pd{p}{t}\, \xi \,dx dy 
+	+ \int\limits_\Omega K \lambda_t \nabla p \cdot \nabla\xi \,dx dy -\int\limits_{\Gamma_L} q_{inj} \xi \, ds
+\end{equation}
 
 \subsubsection{Уравнение переноса водонасыщенности}
 
