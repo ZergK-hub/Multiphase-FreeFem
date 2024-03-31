@@ -1,0 +1,91 @@
+ // Laplace operator with RHS sum of Dirac 
+ //  f = sum  cdelta_i \delta_i
+ real[int] xdelta = [0.25];//  coord x de delta_i
+ real[int] ydelta = [0.25];//  coord x de delta_j
+ real[int] cdelta=[1];//  coef    delta_i
+  mesh Th=square(100,100);
+  verbosity=0;
+mesh Th2;
+// Reference value for FFCS regression tests
+real ref;
+ int c = 0, dop = 0;
+ for(int iter=0;iter < 14;iter++)
+ {
+
+ fespace Vh(Th,P2);     // P1 FE space
+
+ matrix D = interpolate(Vh,xdelta,ydelta, op=dop, composante=c); // the interpolation matrix  
+ // at point (xdelta[j],ydelta[i] ) \hfilll
+ // so $D_ij = w^i((xdelta[j],ydelta[j]) $ where $w^i$ are the basic function of $V_h$. 
+ 
+ Vh uh,vh,Q;  // unkown and test function. 
+ func g=0;                 //  boundary condition function
+ Vh b;
+ b[]= D*cdelta;
+ Q=b;
+ plot(Q, wait=1, cmm="Flow");
+ b[]= -b[];
+ problem laplace(uh,vh) =                    //  definion of  the problem 
+    int2d(Th)( dx(uh)*dx(vh) + dy(uh)*dy(vh) ) //  bilinear form
+  + b[]                         //  linear form of the rhs (so an array)
+  + on(1,2,3,4,uh=0) ;          //  boundary condition form
+
+  laplace; // solve the problem plot(uh); // to see the result
+  cout <<iter << "max uh = " << uh[].max << " nv =  "<< Th.nv <<  endl; 
+  plot(uh,wait=1,dim=3,fill=1);
+
+  cout<<"Iteration = "<<iter<<"\t"+ "uh(0.25,0.25) = "<<uh(0.25,0.25)<<endl;
+
+  Th=adaptmesh(Th,uh,nbvx=100000,err= 0.01*1.15^-iter);
+
+  if (iter==13)
+  {
+    Th2=Th;
+  }
+  
+  // Reference value for FFCS regression tests
+  ref=uh[]'*uh[];//'
+  }
+
+//  Th=Th2;
+//
+//  fespace Vh(Th,P2);     // P1 FE space
+// 
+// matrix D = interpolate(Vh,xdelta,ydelta); // the interpolation matrix  
+// // at point (xdelta[j],ydelta[i] ) \hfilll
+// // so $D_ij = w^i((xdelta[j],ydelta[j]) $ where $w^i$ are the basic function of $V_h$. 
+// 
+// Vh uh,vh,gx,gy;  // unkown and test function. 
+// func g=0;                 //  boundary condition function
+// Vh b;
+//
+//macro Grad(u) [dx(u),dy(u)] //
+//
+// cdelta=[100];
+// b[]= D*cdelta;
+// b[]= -b[];
+// problem laplace(uh,vh) =                    //  definion of  the problem 
+//    int2d(Th)( dx(uh)*dx(vh) + dy(uh)*dy(vh) ) //  bilinear form
+//  + b[]                         //  linear form of the rhs (so an array)
+//  + on(1,2,3,4,uh=0) ;          //  boundary condition form
+//
+//  laplace; // solve the problem plot(uh); // to see the result
+//
+//
+//  
+//  plot(uh,wait=1,dim=3,fill=1, cmm="Last");
+//
+//  //gx=dx(uh);
+//  //gy=dy(uh);
+//
+//  
+//
+//  gx=Grad(uh)'*Grad(uh);
+//
+//  gy=sqrt(gx);
+//
+//  plot(gy,wait=1, cmm="Grad");
+//
+//  cout<<"Grad = "<<gy(0.25,0.25)<<endl;
+  
+
