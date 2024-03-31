@@ -1,0 +1,154 @@
+
+border Bottom(t=0,1){x=t;y=0;}
+
+border Right(t=0,1){x=1;y=t;}
+
+border Top(t=1,0){x=t;y=1;}
+
+border Left(t=1,0){x=0;y=t;}
+
+int n=3;
+
+//mesh Th=buildmesh(Bottom(n)+Right(n)+Top(n)+Left(n));
+
+mesh Th=square(1,1);
+
+plot(Th, wait=1);
+
+int NN = Th.nv;
+
+real[int] b(NN);
+
+int nodeNumber = 0;
+
+
+
+real xCoord = 0.0; 
+real yCoord = 0.0; 
+
+
+
+for (int i = 0; i < Th.nv; i++) {
+    if (abs(Th(i).x - xCoord) < 1e-12 && abs(Th(i).y - yCoord) < 1e-12) {
+        nodeNumber = i;
+        break;
+    }
+}
+
+cout<<" nodeNumber = "<< nodeNumber<<endl;
+
+
+
+int bElementNumber = -1;
+
+for (int i = 0; i < NN; i++) {
+    if (Th(i).label == nodeNumber) {
+        bElementNumber = i;
+        break;
+    }
+}
+
+cout<<" bElementNumber = "<< bElementNumber<<endl;
+
+fespace Vh(Th,P1);
+Vh u,v,w;
+
+cout << "Number of degree of freedom = " << Vh.ndof << endl;
+cout << "Number of degree of freedom / ELEMENT = " << Vh.ndofK << endl;
+int TNumber = Th(0.0, 0.0).nuTriangle; //the triangle number in point {0;0}
+cout<<"the triangle number = "<<TNumber<<endl;
+int k = TNumber, kdf = Vh.ndofK; 
+cout << "Degree of freedom of element " << k << ":" << endl;
+for (int i = 0; i < kdf; i++)
+ cout << Vh(k,i) << " ";
+ cout << endl;
+
+varf BiLinear(u,v)=int2d(Th)(dx(u)*dx(v)+dy(u)*dy(v));
+
+
+
+matrix A=BiLinear(Vh,Vh);
+
+
+
+b=0;
+
+b(nodeNumber)=tgv*25.33;
+b(nodeNumber+3)=tgv*2.0;
+
+
+cout<<"b = "<<b<<endl;
+
+matrix B(NN,NN);
+
+
+
+for(int i=0;i<NN;i++){
+    for(int j=0;j<NN;j++){
+        B(i,j)=0.0;
+    }
+}
+
+B(nodeNumber,nodeNumber)=tgv;
+B(nodeNumber+3,nodeNumber+3)=tgv;
+
+for(int i=0;i<NN;i++){
+    for(int j=0;j<NN;j++){
+        if (j<(NN-1)){
+        cout<<B(i,j)<<"\t\t";
+        }
+        else
+        {
+            cout<<B(i,j)<<endl;
+        }
+
+    }
+}
+cout<<"Matrix A"<<endl;
+for(int i=0;i<NN;i++){
+    for(int j=0;j<NN;j++){
+        if (j<(NN-1)){
+        cout<<A(i,j)<<"\t\t";
+        }
+        else
+        {
+            cout<<A(i,j)<<endl;
+        }
+
+    }
+}
+
+
+
+matrix CC=A+B;
+
+cout<<"Matrix CC "<<endl;
+
+for(int i=0;i<NN;i++){
+    for(int j=0;j<NN;j++){
+        if (j<(NN-1)){
+        cout<<CC(i,j)<<"\t\t";
+        }
+        else
+        {
+            cout<<CC(i,j)<<endl;
+        }
+
+    }
+}
+
+matrix AA=CC;
+
+set(AA,solver=sparsesolver);
+
+real[int] ww(NN);
+
+ww=AA^-1*b;
+
+
+cout<<ww<<endl;
+
+w[]=ww;
+
+plot(w, fill=1, value=1);
+
