@@ -1,0 +1,13 @@
+ mesh Th=square(100,100);
+fespace Vh(Th,P1); 
+
+
+real[int] xx = [.3, .4], yy = [.1, .4];
+int c = 0, dop = 0;
+matrix Ixx = interpolate(Vh, xx, yy, op=dop, composante=c);
+cout << Ixx << endl;
+Vh ww;
+real[int] dd = [1, 2];
+ww[] = Ixx*dd;
+
+plot(ww);
