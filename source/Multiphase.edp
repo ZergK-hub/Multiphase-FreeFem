@@ -1,36 +1,9 @@
-real Lx=1;
 
-real Ly=1;
+/*Mesh Generation*/
+include "MeshGen.edp"
 
- 
-
-int n=50;
-
-int nx=n;
-
-int ny=n;
-
- 
-
-int labelB=1;
-
-int labelR=2;
-
-int labelT=3;
-
-int labelL=4;
-
- 
-
-mesh Th=square(nx,ny,[Lx*x,Ly*y]);
-
- 
-
-plot(Th);
-
+/*Set parameters, constants and initial data*/
 real pOut = 0; /*[Pa]*/
-
-exit(0);
 
 //real qtIn = 3.85e-5; /*[m^2/s], Total rate per pay zone height*/
 
@@ -40,15 +13,22 @@ real Qinj=200.0/Day; /*[m^3/s] injection rate*/
 
 real Qprod=50.0/Day; /*[m^3/s] production rate*/
 
+/*Compressibilities*/
+
+real cr; /*pore compressibility*/
+
+real cw; /*water compressibility*/
+
+real co; /*oil compressibility*/
 
 
 /*Relative permeabilities */
 
 real eps = 1e-6;
 
-real Swc = 0.35;
+real Swc = 0.35; /*water saturation critical*/
 
-real Soc = 0.32;
+real Soc = 0.32; /*oil saturaion critical*/
 
  
 
@@ -64,9 +44,9 @@ real nw = 2;
 
  
 
-real muW = 0.35e-3; /*[Pa*s]*/
+real muW = 0.35e-3; /*[Pa*s] water viscosity*/
 
-real muO = 2.06e-3; /*[Pa*s]*/
+real muO = 2.06e-3; /*[Pa*s] oil viscosity*/
 
  
 
@@ -84,7 +64,12 @@ real K = 1e-14; /*[m^2], Absolute permeability*/
 
 real dt = 0.005*1e4 / 2/2; /*[s], Timestep*/
 
- 
+
+func real ct(real SwIn){
+
+    return cr+cw*SwIn+co*(1-SwIn);
+}
+
 
 func real krw(real SwIn) {
 
@@ -236,6 +221,11 @@ load "MUMPS_seq"
 
 real epsilon = 1e-2 / 2 /2/4/5*1e-4; /*artificial diffusivity*/
 
+varf DiffusionBiLinear(p,xi,solver=sparsesolver) =
+    
+    int2d(ct(SwIter)*fiIter*p*xi)
+   
+    +dt*K*lambdaT(SwIter)*grad(p)'*grad(xi)
  
 
 problem SaturationProblem(Sw,psi, solver=sparsesolver) =

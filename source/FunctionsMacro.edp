@@ -1,0 +1,132 @@
+/*total compressibility*/
+
+func real ct(real SwIn){
+
+    return cr+cw*SwIn+co*(1-SwIn);
+}
+
+/*water relative permeability*/
+
+func real krw(real SwIn) {
+
+ 
+
+    real S = (SwIn - Swc)/(1-Swc-Soc);
+
+ 
+
+    S = min (1.0, S);
+
+ 
+
+    S = max(0.0, S);
+
+ 
+
+    return krw0*S^nw;
+
+}
+
+/*oil relative permeability*/
+
+func real kro(real SwIn) {
+
+ 
+
+    real S = (SwIn - Swc)/(1-Swc-Soc);
+
+ 
+
+    S = min (1.0, S);
+
+ 
+
+    S = max(0.0, S);
+
+ 
+
+    return kro0*(1-S)^no;
+
+}
+
+/*water mobility*/
+
+func real lambdaW(real SwIn){
+
+ 
+
+    return krw(SwIn)/ muW;
+
+}
+
+/*oil mobility*/
+
+func real lambdaO(real SwIn){
+
+ 
+
+    return kro(SwIn)/ muO;
+
+}
+
+/*total mobility*/
+
+func real lambdaT(real SwIn){
+
+ 
+
+    return lambdaW(SwIn)+lambdaO(SwIn);
+
+}
+
+/*Buckley - Leverett function*/
+
+func real fW(real SwIn){
+
+ 
+
+    return lambdaW(SwIn)/lambdaT(SwIn);
+
+}
+
+/*Derivative of BL*/
+
+/*!!! Only for nw=no=2*/
+
+func real fWCoreyDerivative(real SwIn){
+
+ 
+
+    real S = (SwIn - Swc)/(1-Swc-Soc);
+
+ 
+
+    S = min (1.0, S);
+
+ 
+
+    S = max(0.0, S);
+
+ 
+
+    real denum = (
+
+        krw0*S^2*muO
+
+        +kro0*(1-S)^2*muW
+
+    )^2;
+
+ 
+
+    real derS = 2*krw0*kro0*(1-S)*S*muW*muO/denum;
+
+ 
+
+    return derS/(1-Swc-Soc);
+
+}
+
+/*Macros*/
+
+macro grad(p)[dx(p),dy(p)] //EOM

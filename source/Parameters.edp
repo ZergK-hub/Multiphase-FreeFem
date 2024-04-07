@@ -1,0 +1,53 @@
+
+/*Conversion factors*/
+
+real Day=86400.0; /*[s], day 2 sec coversion*/
+
+real psi2Pa=6894.76; /*[Pa]*/
+
+/*Injection and prodction rates*/
+
+real Qinj=200.0/Day; /*[m^3/s] injection rate*/
+
+real Qprod=50.0/Day; /*[m^3/s] production rate*/
+
+/*Compressibilities 
+L.P.Dake,"Fundamental of reservoir engineering", 1978, p.138 */
+
+real cr=(6.0E-6)/psi2Pa; /*[1/Pa] pore compressibility*/
+
+real cw=(3.0E-6)/psi2Pa; /*[1/Pa] water compressibility*/
+
+real co=(10.0E-6)/psi2Pa; /*[1/Pa] oil compressibility*/
+
+/*Permeabilities and saturtions*/
+
+real eps = 1e-6;
+
+real K = 1e-14; /*[m^2], Absolute permeability*/
+
+real Swc = 0.35; /*water saturation critical*/
+
+real Soc = 0.32; /*oil saturaion critical*/
+
+real kro0 = 0.86; /*oil relative permeability at Swc*/
+
+real krw0 = 0.21; /*water relative permeability at Soc*/
+
+real no = 2; /*Corey exponent for oil*/
+
+real nw = 2; /*Corey exponent for water*/
+
+/*Viscosities*/
+
+real muW = 0.35e-3; /*[Pa*s] water viscosity*/
+
+real muO = 2.06e-3; /*[Pa*s] oil viscosity*/
+
+/*Porosity*/
+
+real phi0 = 0.2;
+
+/*Timestep*/
+
+real dt = 0.005*1e4 / 2/2; /*[s], Timestep*/
