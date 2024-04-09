@@ -1,0 +1,42 @@
+
+varf DiffusionBiLinear(p,xi) =
+    
+    int2d(Th)(
+        
+        ct(SwIter)*phiIter*p*xi
+   
+        +dt*(K*lambdaT(SwIter)*grad(p)'*grad(xi))
+    )
+    
+    +on(labelProd, p=Pprod); /*penalty term*/
+
+varf DiffusionLinear(p,xi) = 
+
+    int2d(Th)(ct(SwIter)*phiIter*pOld*xi)
+
+    -dt*RHSdiffusion[]
+
+    +on(labelProd, p=Pprod); /*penalty term*/
+
+varf TransportBiLinear(Sw, psi) =
+
+    int2d(Th)(
+        (phiIter+phiIter*(cr+cw)*(p-pOld))*Sw*psi
+        +dt*K*lambdaT(SwIter)*fWCoreyDerivative(SwIter)*Sw*grad(p)'*grad(psi)
+        +dt*epsilon*grad(Sw)'*grad(psi)
+    )
+    -int1d(Th,GammaProd)(
+        dt*K*lambdaT(SwIter)*fWCoreyDerivative(SwIter)*Sw*(dx(p)*N.x*psi+dy(p)*N.y*psi)
+    )
+
+varf TransportLinear(Sw,psi) =
+
+    int2d(Th)(
+         dt*K*lambdaT(SwIter)*fW(SwIter)*grad(p)'*grad(psi)
+        -dt*K*lambdaT(SwIter)*fWCoreyDerivative(SwIter)*grad(p)'*grad(psi)
+        -phiIter*SwOld*psi
+    )
+    +int1d(Th, GammaProd)(
+        -dt*K*lambdaT(SwIter)*fW(SwIter)*(dx(p)*N.x*psi+dy(p)*N.y*psi)
+        +dt*K*lambdaT(SwIter)*fWCoreyDerivative(SwIter)*SwIter*(dx(p)*N.x*psi+dy(p)*N.y*psi)
+    )

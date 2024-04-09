@@ -1,0 +1,30 @@
+
+fespace Vh(Th, P1);
+
+Vh 
+p, /*unknown pressure at k+1 within n+1 timestep*/
+pOld, /*known pressure at previous timestep n*/
+Sw, /*unknown water saturation at k+1 within n+1 timestep*/
+SwOld, /*known water saturation at previous timestep n*/
+phi, /*porosity at k+1 within n+1 timestep*/
+phiOld, /*known porosity at k within n+1 timestep*/
+phiIter, /*known porosity at k within n+1 timestep*/ 
+phiOld, /*known porosity at previous timestep n*/
+SwIter, /*known water saturation at k within n+1 timestep*/
+psi,/*weighting function for saturation*/
+xi; /*weighting function for pressure*/
+
+Vh 
+RHSdiffusion; /*point source function for injection well*/
+
+SwOld = SwInit; /*initialization of water saturation*/
+
+pOld = pInit; /*initialization of pressure*/
+
+phiOld = phi0; /*initialization of porosity at previous timestep n*/
+
+phiIter = phi0; /*initial guess for porosity*/
+
+SwIter = SwInit; /*initial guess of water saturation*/
+
+

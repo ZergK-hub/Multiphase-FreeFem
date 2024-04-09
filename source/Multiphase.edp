@@ -221,7 +221,7 @@ load "MUMPS_seq"
 
 real epsilon = 1e-2 / 2 /2/4/5*1e-4; /*artificial diffusivity*/
 
-varf DiffusionBiLinear(p,xi,solver=sparsesolver) =
+varf DiffusionBiLinear(p,xi) =
     
     int2d(ct(SwIter)*fiIter*p*xi)
    
@@ -328,7 +328,7 @@ while (t < tMax){
 
  
 
-        cout <<"[" << kIter<<"]: rekSwError ="<< relSwError <<endl;
+        cout <<"[" << kIter<<"]: relSwError ="<< relSwError <<endl;
 
         SwIter = Sw;
 

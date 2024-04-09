@@ -1,3 +1,6 @@
+load "MUMPS_seq"
+
+load "iovtk"
 
 /*Conversion factors*/
 
@@ -5,11 +8,19 @@ real Day=86400.0; /*[s], day 2 sec coversion*/
 
 real psi2Pa=6894.76; /*[Pa]*/
 
+real atm2Pa=101325.0 /*[Pa]*/
+
 /*Injection and prodction rates*/
 
 real Qinj=200.0/Day; /*[m^3/s] injection rate*/
 
 real Qprod=50.0/Day; /*[m^3/s] production rate*/
+
+/*Injection and production pressures*/
+
+real Pinj = 300.0*atm2Pa; /*[Pa] injection well pressure*/
+
+real Pprod = 40.0*atm2Pa; /*[Pa] production well pressure*/
 
 /*Compressibilities 
 L.P.Dake,"Fundamental of reservoir engineering", 1978, p.138 */
@@ -48,6 +59,18 @@ real muO = 2.06e-3; /*[Pa*s] oil viscosity*/
 
 real phi0 = 0.2;
 
-/*Timestep*/
+/*Initial conditions*/
+
+real pInit=250*atm2Pa; /*[Pa] init pore pressure*/
+
+real SwInit=Swc;       /*initial water saturation in well*/
+
+/*Total Time, Timestep*/
 
 real dt = 0.005*1e4 / 2/2; /*[s], Timestep*/
+
+real tMax = 1000;
+
+/*artificial diffusivity*/
+
+real epsilon = 1e-2 / 2 /2/4/5*1e-4; 

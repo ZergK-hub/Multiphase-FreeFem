@@ -1,0 +1,40 @@
+
+real t=0; /*time parameter*/
+
+int it =1; /*number of timestep*/
+
+int[int] order = [1]; /*order*/
+
+savevtk("./num/sol0.vtu",Th, SwOld,dataname="Sw", order=order);
+
+while (t < tMax){
+
+
+    cout << "it = " <<it<<"\t;t="<< t << endl;
+
+    
+    real relSwError = 1.0;
+
+    int kIter =0;
+
+    while (relSwError>1e-7){
+
+
+        matrix Ad=DiffusionBiLinear(Vh,Vh);
+
+        real[int] RHSd=DiffusionLinear(0,Vh);
+
+        set(Ad, solver=sparsesolver);
+
+        p[]=Ad^-1*RHSd;
+
+        
+
+
+
+
+    }
+
+
+
+}

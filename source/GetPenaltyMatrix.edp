@@ -1,0 +1,54 @@
+
+fespace Vh(Th,[P1,P1]);
+
+
+
+cout << "Number of degree of freedom = " << Vh.ndof << endl;
+cout << "Number of degree of freedom / ELEMENT = " << Vh.ndofK << endl;
+int TNumber = Th(0.0, 0.0).nuTriangle; //the triangle number in point {0;0}
+cout<<"the triangle number = "<<TNumber<<endl;
+int k = TNumber, kdf = Vh.ndofK; 
+cout << "Degree of freedom of element " << k << ":" << endl;
+for (int i = 0; i < kdf; i++)
+ cout << Vh(k,i) << " ";
+ cout << endl;
+
+
+int it=TNumber;
+cout<< "Area = "<<Th[it].area<<endl;
+cout<< "Region = "<<Th[it].region <<endl;
+for (int ivloc=0; ivloc<3; ivloc++)
+{
+    int ivglob = Th[it][ivloc];
+    cout<<ivglob<<": "<<
+    Th[it][ivloc].x<<"  "<<
+    Th[it][ivloc].y<<endl;
+    if ((Th[it][ivloc].x==0.0)&(Th[it][ivloc].y==0.0))
+    {
+        cout<<"Root DoF = "<<ivglob<<endl;
+    }
+}
+
+/*
+Vh fx=x, fy=y;
+
+real[int] Fx=fx[];
+
+real[int] Fy=fy[];
+
+
+cout<<"Fx.n = "<<Fx.n<<endl;
+cout<<"Fy.n = "<<Fy.n<<endl;
+
+for (int i=0; i<Fx.n-1; i++)
+        
+        
+        if ((Fy[i]==0) & (Fx[i]==0))
+            {
+
+                        cout<<"Number of DoF where x=0 and y=0"<<endl;
+                        cout<<"i = "<<i<<";"<<endl;
+              
+            }
+        
+*/
