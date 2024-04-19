@@ -6,3 +6,15 @@ cout<<"cr = "<<cr<<endl;
 
 include "FunctionsMacro.edp"
 
+include "FEspaces.edp"
+
+include "RHS.edp"
+
+include "VariationalForms.edp"
+
+include "GetPenaltyMatrix.edp"
+
+include "MainCycle.edp"
+
+
+

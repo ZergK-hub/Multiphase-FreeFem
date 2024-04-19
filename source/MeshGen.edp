@@ -1,3 +1,6 @@
+int PointInj=0; /*point injection or well boundary injection*/
+int SplitLevel=1; /*how many split levels do you want? Choose from [1,2,3,4,5]*/
+int WellMesh=6;
 
 real xMin=0;
 real xMax=10;
@@ -15,8 +18,9 @@ int labelR=2;
 int labelProd=3;
 int labelT=4;
 int labelL=5;
+int labelInj=6;
 
-real beta=3.0;
+real beta=5.0;
 
 border GammaB(t=0,1){
 
@@ -30,6 +34,16 @@ border GammaB(t=0,1){
 border GammaBB(t=0,1){
 
     x=xMin+(xMax-xMin)*(exp(beta*(t))-1)/(exp(beta)-1);
+
+    y=yMin;
+
+    label=labelB;
+
+}
+
+border GammaBInj(t=0,1){
+
+    x=(xMin+Rwell)+(xMax-xMin-Rwell)*(exp(beta*(t))-1)/(exp(beta)-1);
 
     y=yMin;
 
@@ -53,6 +67,11 @@ border GammaProd(t=pi/2,0){
     label =labelProd;
 }
 
+border GammaInj(t=pi/2,0){
+    x=Rwell*cos(t)+xMin;
+    y=Rwell*sin(t)+yMin;
+    label =labelInj;
+}
 
 border GammaT(t=0,1){
 
@@ -81,10 +100,30 @@ border GammaLL(t=1,0){
     label=labelL;
 }
 
-plot(GammaBB(n)+GammaR(n)+GammaProd(5)+GammaT(n)+GammaLL(n),dim=2,wait=1);
- 
-mesh Th=buildmesh(GammaBB(n)+GammaR(n)+GammaProd(5)+GammaT(n)+GammaLL(n));
+border GammaLInj(t=1,0){
 
+    x=0;
+
+    y=(yMin+Rwell)+(yMax-yMin-Rwell)*(exp(beta*t)-1)/(exp(beta)-1);
+
+    label=labelL;
+}
+
+mesh Th;
+
+if (PointInj){
+
+    plot(GammaBB(n)+GammaR(n)+GammaProd(WellMesh)+GammaT(n)+GammaLL(n),dim=2,wait=1);
+ 
+    Th=buildmesh(GammaBB(n)+GammaR(n)+GammaProd(WellMesh)+GammaT(n)+GammaLL(n));
+
+}
+else
+{
+    plot(GammaBInj(n)+GammaR(n)+GammaProd(WellMesh)+GammaT(n)+GammaLInj(n)+GammaInj(WellMesh),dim=2,wait=1);
+ 
+    Th=buildmesh(GammaBInj(n)+GammaR(n)+GammaProd(WellMesh)+GammaT(n)+GammaLInj(n)+GammaInj(WellMesh));
+}
 
 
 func real Spl(real xx, real yy, real r)
@@ -97,9 +136,10 @@ func real Spl(real xx, real yy, real r)
 }
 
 
+
 fespace Wh(Th,P1);
 
-for (int i=3; i>1; i--)
+for (int i=SplitLevel; i>1; i--)
 {
     Wh MS;
 

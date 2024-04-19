@@ -3,9 +3,15 @@ real t=0; /*time parameter*/
 
 int it =1; /*number of timestep*/
 
-int[int] order = [1]; /*order*/
+int[int] order = [1,1,1]; /*order*/
 
-savevtk("./num/sol0.vtu",Th, SwOld,dataname="Sw", order=order);
+//plot(p, wait=1, value=1, cmm="Pressure0");
+
+//plot(phi, wait=1, value=1, cmm="Porosity0");
+
+//plot(Sw, wait=1, value=1, cmm="Saturation0");
+
+savevtk("./num/sol0.vtu",Th, p,SwOld,phi,dataname="p Sw phi", order=order);
 
 while (t < tMax){
 
@@ -13,12 +19,16 @@ while (t < tMax){
     cout << "it = " <<it<<"\t;t="<< t << endl;
 
     
+    
     real relSwError = 1.0;
 
     int kIter =0;
 
+    int cycle=0;
+
     while (relSwError>1e-7){
 
+        /*solving DIFFUSION problem*/
 
         matrix Ad=DiffusionBiLinear(Vh,Vh);
 
@@ -26,15 +36,108 @@ while (t < tMax){
 
         set(Ad, solver=sparsesolver);
 
+        cout<<"Pressure Matrix Formed"<<endl;
+
+        cpu=clock();
         p[]=Ad^-1*RHSd;
+        cout<<"Pressure solution time: "<<clock()-cpu<<endl;
+        //plot(p, wait=1, value=1, fill=1, cmm="Pressure");
+
+       
+
+        /*solving TRANSPORT problem*/
+
+        matrix A;
+
+        matrix At;
+
+        real[int] RHSt(Vh.ndof);
+
+        real[int] RHS(Vh.ndof);
+
+        if (PointInj){
+
+            At=TransportBiLinearPoint(Vh,Vh);
+
+            RHSt=TransportLinearPoint(0,Vh);
+
+            /*penalty method for TRANSPORT*/
+        
+
+        
+            cpu=clock();
+            A=At+PP; /*system matrix correction with penalty term*/
+            cout<<"Matrix sum time: "<<clock()-cpu<<endl;
+
+            RHS=RHSt+d; /*RHS correction with penalty term*/
+        }
+        else{
+
+            A=TransportBiLinear(Vh,Vh);
+           
+
+            RHS=TransportLinear(0,Vh);
+
+            
+
+        }
+
+
+        set(A,solver=sparsesolver);
 
         
 
+        Sw[]=A^-1*RHS;
 
+        
 
+       
+
+        /*solving POROSITY*/
+
+        /*phi=phiOld+cr*phiIter*(p-pOld);*/
+        phiIter=phi;
+        
+        relSwError=
+        int2d(Th)(abs(Sw-SwIter))/
+        int2d(Th)(abs(Sw));
+
+        cout<<"["<<kIter<<"]: relSwError = "<<relSwError<<endl;
+
+        //plot(Sw, wait=1, value=1, fill=1, cmm="Saturation");
+
+        SwIter = Sw;
+
+        
+
+        kIter++;
+
+        if (kIter>20)
+        {
+            dt=dt/2;
+
+            kIter=0;
+
+            epsilon=epsilon;
+
+            cycle++;
+            
+        }       
 
     }
+if (cycle>0)
+ {dt=dt*cycle*2;}  
 
+    plot(Sw, wait=0, value=1, fill=1, cmm="Saturation");
 
+    savevtk("./num/sol"+it+".vtu",Th, p,Sw,phi,dataname="p Sw phi", order=order);
+
+/*Update at the end of timestep*/
+SwOld = Sw;
+p=pOld;
+cout<<"time = "<<t/3600<<endl;
+
+t=t+dt;
+it++;
 
 }

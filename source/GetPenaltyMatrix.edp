@@ -1,54 +1,80 @@
 
-fespace Vh(Th,[P1,P1]);
-
-
+//fespace Vh(Th,P2);
 
 cout << "Number of degree of freedom = " << Vh.ndof << endl;
 cout << "Number of degree of freedom / ELEMENT = " << Vh.ndofK << endl;
-int TNumber = Th(0.0, 0.0).nuTriangle; //the triangle number in point {0;0}
+int TNumber = Th(InjSourceX, InjSourceY).nuTriangle; //the triangle number in point
 cout<<"the triangle number = "<<TNumber<<endl;
 int k = TNumber, kdf = Vh.ndofK; 
 cout << "Degree of freedom of element " << k << ":" << endl;
 for (int i = 0; i < kdf; i++)
+{
  cout << Vh(k,i) << " ";
+}
+ cout << endl;
+int[int] DoF(kdf);
+for (int i = 0; i < kdf; i++)
+{
+ DoF(i)=Vh(k,i);
+}
  cout << endl;
 
-
-int it=TNumber;
-cout<< "Area = "<<Th[it].area<<endl;
-cout<< "Region = "<<Th[it].region <<endl;
-for (int ivloc=0; ivloc<3; ivloc++)
-{
-    int ivglob = Th[it][ivloc];
-    cout<<ivglob<<": "<<
-    Th[it][ivloc].x<<"  "<<
-    Th[it][ivloc].y<<endl;
-    if ((Th[it][ivloc].x==0.0)&(Th[it][ivloc].y==0.0))
-    {
-        cout<<"Root DoF = "<<ivglob<<endl;
-    }
-}
-
-/*
 Vh fx=x, fy=y;
 
 real[int] Fx=fx[];
 
 real[int] Fy=fy[];
 
+int DoFnum;
 
-cout<<"Fx.n = "<<Fx.n<<endl;
-cout<<"Fy.n = "<<Fy.n<<endl;
+cout << "Coordinates of DoF of element " << k << ":" << endl;
+{ofstream f("./Data.txt");
+for (int i = 0; i < kdf; i++){
+  cout << fx[][DoF(i)] << " "<< fy[][DoF(i)]<< endl;
+  if ((fx[][DoF(i)]==InjSourceX)&(fy[][DoF(i)]==InjSourceY))
+    {   
+        DoFnum=DoF(i);
+        f<<"Coords for DoF #\t"<<DoF(i)<<"\t"<<fx[][DoF(i)] << "\t"<< fy[][DoF(i)] <<"\t"<<"red"<<"\n";
+    }
+    else
+    {
+        f<<"Coords for DoF #\t"<<DoF(i)<<"\t"<<fx[][DoF(i)] << "\t"<< fy[][DoF(i)] <<"\t"<<"blue"<<"\n";
+    }
+  }
+cout << endl;
+    
+}
 
-for (int i=0; i<Fx.n-1; i++)
-        
-        
-        if ((Fy[i]==0) & (Fx[i]==0))
-            {
+//exec("python ./Triang.py");
 
-                        cout<<"Number of DoF where x=0 and y=0"<<endl;
-                        cout<<"i = "<<i<<";"<<endl;
-              
-            }
-        
+int NN=Vh.ndof;
+
+cout<<"NN = "<<NN<< endl;
+
+matrix PP(NN,NN);
+
+real[int] d(NN);
+
+
+/*
+
+for(int i=0;i<NN;i++){
+    for(int j=0;j<NN;j++){
+        cpu=clock();
+        PP(i,j)=0.0;
+        cout<<"Time for PP = "<<clock()-cpu<<endl;
+    }
+}
 */
+
+
+
+PP(DoFnum,DoFnum)=tgv;
+
+cout<<"PP(DoFnum,DoFnum) = "<<PP(DoFnum,DoFnum)<<endl;
+
+d=0;
+
+d(DoFnum)=tgv*SwInj;
+
+

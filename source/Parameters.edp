@@ -8,13 +8,19 @@ real Day=86400.0; /*[s], day 2 sec coversion*/
 
 real psi2Pa=6894.76; /*[Pa]*/
 
-real atm2Pa=101325.0 /*[Pa]*/
+real atm2Pa=101325.0; /*[Pa]*/
 
 /*Injection and prodction rates*/
 
-real Qinj=200.0/Day; /*[m^3/s] injection rate*/
+real Qinj=300.0/Day; /*[m^3/s] injection rate*/
 
 real Qprod=50.0/Day; /*[m^3/s] production rate*/
+
+real h=10; /*[m] height*/
+
+real qInj=Qinj/h; /*[m^2/s] production rate per height*/
+
+real qProd=-0.25*Qprod/h;
 
 /*Injection and production pressures*/
 
@@ -35,7 +41,7 @@ real co=(10.0E-6)/psi2Pa; /*[1/Pa] oil compressibility*/
 
 real eps = 1e-6;
 
-real K = 1e-14; /*[m^2], Absolute permeability*/
+real K = 1e-13; /*[m^2], Absolute permeability*/
 
 real Swc = 0.35; /*water saturation critical*/
 
@@ -65,12 +71,22 @@ real pInit=250*atm2Pa; /*[Pa] init pore pressure*/
 
 real SwInit=Swc;       /*initial water saturation in well*/
 
+real SwInj=1-Soc;
+
 /*Total Time, Timestep*/
 
-real dt = 0.005*1e4 / 2/2; /*[s], Timestep*/
+//real dt = 0.001*1e4 / 2/2; /*[s], Timestep*/
 
-real tMax = 1000;
+real dt= 1800;
+
+real tMax = 3*86400;
 
 /*artificial diffusivity*/
 
-real epsilon = 1e-2 / 2 /2/4/5*1e-4; 
+real epsilon = 1e-6;
+
+/*Injection source coords*/
+
+real InjSourceX=0.0;
+
+real InjSourceY=0.0;

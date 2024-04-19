@@ -1,4 +1,6 @@
 include "MeshGen.edp"
 
+include "Parameters.edp"
+
 include "GetPenaltyMatrix.edp"
 

@@ -1,10 +1,21 @@
 
 real[int] xdelta = [0.0];//  coord x of point source
 real[int] ydelta = [0.0];//  coord y of point source
-real[int] cdelta=[0.25*Qinj];//  value of point source
+real[int] cdelta=[PointInj*dt*0.25*Qinj];//  value of point source
   
 
- matrix D = interpolate(Vh,xdelta,ydelta); // the interpolation matrix  
- 
- RHSdiffusion[]= D*cdelta;
- //RHSdiffusion[]= -RHSdiffusion[];
+    cout<<"Before Interpolate"<<endl;
+
+    real cpu = clock();
+
+
+
+    matrix D = interpolate(Vh,xdelta,ydelta); // the interpolation matrix  
+
+    cout<<"After Interpolate"<<endl;
+
+    cout << " CPU time = " << clock()-cpu << endl;
+
+    RHSdiffusion[]= D*cdelta;
+    //RHSdiffusion[]= -RHSdiffusion[];
+
