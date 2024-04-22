@@ -1,4 +1,4 @@
-load "MUMPS_seq"
+//load "MUMPS_seq"
 
 load "iovtk"
 
@@ -83,7 +83,9 @@ real tMax = 3*86400;
 
 /*artificial diffusivity*/
 
-real epsilon = 1e-6;
+real epsilon =1e-3;
+
+real theta=0.1;
 
 /*Injection source coords*/
 

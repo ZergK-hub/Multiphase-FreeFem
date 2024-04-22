@@ -5,6 +5,33 @@ int it =1; /*number of timestep*/
 
 int[int] order = [1,1,1]; /*order*/
 
+
+real[int] elsize(Th.nt);
+
+
+
+for(int el=0; el<Th.nt; el++)
+{
+    elsize[el]=Th[el].area;
+}
+
+real maxElSize=1/elsize.max;
+
+for (int el=0; el<Th.nt; el++)
+{
+    elsize[el]=elsize[el]*maxElSize;
+}
+
+h0size[]=elsize; /*form P0 field from vector, containing size of the element*/
+
+hsize=h0size;
+
+cout<<"Max Element Size =============== "<<hsize[].max<<endl;
+cout<<"Min Element Size =============== "<<hsize[].min<<endl;
+
+
+
+
 //plot(p, wait=1, value=1, cmm="Pressure0");
 
 //plot(phi, wait=1, value=1, cmm="Porosity0");
@@ -28,6 +55,9 @@ while (t < tMax){
 
     while (relSwError>1e-7){
 
+        load "MUMPS_seq"
+
+        //load "UMFPACK64"
         /*solving DIFFUSION problem*/
 
         matrix Ad=DiffusionBiLinear(Vh,Vh);
@@ -43,13 +73,36 @@ while (t < tMax){
         cout<<"Pressure solution time: "<<clock()-cpu<<endl;
         //plot(p, wait=1, value=1, fill=1, cmm="Pressure");
 
-       
+       vnorm=K*lambdaT(SwIter)*sqrt(grad(p)'*grad(p));
+
+       vnorm=vnorm/vnorm[].max;
+
+
+       //plot(vnorm, wait=1,fill=1, value=1, dim=3, cmm="vnorm");
+
+       multeps=epsilon*vnorm*hsize;
+
+       //plot(multeps, dim=3, value=1, wait=1, fill=1);
+
+       /*solving POROSITY*/
+
+        
+
+        phi=(1-theta)*phiOld+cr*theta*phiIter*(p-pOld);
+
+        plot(phi, fill=1, value=1, dim=3, wait=1);
+        
+        phiIter=phi;
 
         /*solving TRANSPORT problem*/
+
+        
 
         matrix A;
 
         matrix At;
+        
+        
 
         real[int] RHSt(Vh.ndof);
 
@@ -73,10 +126,21 @@ while (t < tMax){
         }
         else{
 
-            A=TransportBiLinear(Vh,Vh);
-           
+            cpu=clock();
+            mult1=K*lambdaT(SwIter)*fW(SwIter);
 
-            RHS=TransportLinear(0,Vh);
+            mult2=K*lambdaT(SwIter)*fWCoreyDerivative(SwIter);
+            
+            A=TransportBiLinear(Vh1,Vh1);
+           
+            cout<<"Transport Matrix gen time: "<<clock()-cpu<<endl;
+
+            cpu=clock();
+
+            
+
+            RHS=TransportLinear(0,Vh1);
+            cout<<"Transport RHS gen time: "<<clock()-cpu<<endl;
 
             
 
@@ -84,19 +148,16 @@ while (t < tMax){
 
 
         set(A,solver=sparsesolver);
-
+        //set(A,solver=UMFPACK);
         
-
+        cpu=clock();
         Sw[]=A^-1*RHS;
-
+        cout<<"Transport solver time: "<<clock()-cpu<<endl;
+        
+        
         
 
-       
-
-        /*solving POROSITY*/
-
-        /*phi=phiOld+cr*phiIter*(p-pOld);*/
-        phiIter=phi;
+        
         
         relSwError=
         int2d(Th)(abs(Sw-SwIter))/
@@ -112,7 +173,7 @@ while (t < tMax){
 
         kIter++;
 
-        if (kIter>20)
+        if (kIter>50)
         {
             dt=dt/2;
 
@@ -135,6 +196,8 @@ if (cycle>0)
 /*Update at the end of timestep*/
 SwOld = Sw;
 p=pOld;
+phi=phiOld;
+       
 cout<<"time = "<<t/3600<<endl;
 
 t=t+dt;

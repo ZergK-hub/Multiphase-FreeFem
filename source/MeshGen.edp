@@ -1,6 +1,6 @@
 int PointInj=0; /*point injection or well boundary injection*/
 int SplitLevel=1; /*how many split levels do you want? Choose from [1,2,3,4,5]*/
-int WellMesh=6;
+int WellMesh=5;
 
 real xMin=0;
 real xMax=10;
@@ -11,7 +11,7 @@ real yMax=10;
 real Rwell=0.1;
  
 
-int n=51; /*number of elements along a boundary*/
+int n=50; /*number of elements along a boundary*/
 
 int labelB=1;
 int labelR=2;
@@ -20,7 +20,7 @@ int labelT=4;
 int labelL=5;
 int labelInj=6;
 
-real beta=5.0;
+real beta=1;
 
 border GammaB(t=0,1){
 
