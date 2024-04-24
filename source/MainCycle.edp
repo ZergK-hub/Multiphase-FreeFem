@@ -49,6 +49,8 @@ while (t < tMax){
     
     real relSwError = 1.0;
 
+    
+
     int kIter =0;
 
     int cycle=0;
@@ -59,18 +61,40 @@ while (t < tMax){
 
         //load "UMFPACK64"
         /*solving DIFFUSION problem*/
+        real relPhiError= 1.0;
 
-        matrix Ad=DiffusionBiLinear(Vh,Vh);
+        while (relPhiError>1e-7)
+        {
 
-        real[int] RHSd=DiffusionLinear(0,Vh);
+        
 
-        set(Ad, solver=sparsesolver);
+            matrix Ad=DiffusionBiLinear(Vh,Vh);
 
-        cout<<"Pressure Matrix Formed"<<endl;
+            real[int] RHSd=DiffusionLinear(0,Vh);
 
-        cpu=clock();
-        p[]=Ad^-1*RHSd;
-        cout<<"Pressure solution time: "<<clock()-cpu<<endl;
+            set(Ad, solver=sparsesolver);
+
+            cout<<"Pressure Matrix Formed"<<endl;
+
+            cpu=clock();
+            p[]=Ad^-1*RHSd;
+            cout<<"Pressure solution time: "<<clock()-cpu<<endl;
+
+            phi=phi0+cr*phi0*(p-pOld);
+
+            relPhiError=
+            int2d(Th)(abs(phi-phiIter)) / int2d(Th)(abs(phi));
+
+            
+
+            cout<<"relPhiError = "<<relPhiError<<endl;
+
+        
+            //plot(phi, fill=1, value=1, dim=3, wait=1);
+                
+            phiIter=phi;
+
+        }
         //plot(p, wait=1, value=1, fill=1, cmm="Pressure");
 
        vnorm=K*lambdaT(SwIter)*sqrt(grad(p)'*grad(p));
@@ -84,15 +108,7 @@ while (t < tMax){
 
        //plot(multeps, dim=3, value=1, wait=1, fill=1);
 
-       /*solving POROSITY*/
-
-        
-
-        phi=(1-theta)*phiOld+cr*theta*phiIter*(p-pOld);
-
-        plot(phi, fill=1, value=1, dim=3, wait=1);
-        
-        phiIter=phi;
+       
 
         /*solving TRANSPORT problem*/
 
@@ -132,17 +148,11 @@ while (t < tMax){
             mult2=K*lambdaT(SwIter)*fWCoreyDerivative(SwIter);
             
             A=TransportBiLinear(Vh1,Vh1);
-           
+       
             cout<<"Transport Matrix gen time: "<<clock()-cpu<<endl;
-
             cpu=clock();
-
-            
-
             RHS=TransportLinear(0,Vh1);
             cout<<"Transport RHS gen time: "<<clock()-cpu<<endl;
-
-            
 
         }
 
@@ -160,14 +170,19 @@ while (t < tMax){
         
         
         relSwError=
-        int2d(Th)(abs(Sw-SwIter))/
-        int2d(Th)(abs(Sw));
+        int2d(Th)(abs(Sw-SwIter)) / int2d(Th)(abs(Sw));
 
         cout<<"["<<kIter<<"]: relSwError = "<<relSwError<<endl;
 
         //plot(Sw, wait=1, value=1, fill=1, cmm="Saturation");
 
         SwIter = Sw;
+
+
+        
+
+        //pOld=pIter;
+
 
         
 
@@ -193,9 +208,26 @@ if (cycle>0)
 
     savevtk("./num/sol"+it+".vtu",Th, p,Sw,phi,dataname="p Sw phi", order=order);
 
+
+
+
 /*Update at the end of timestep*/
+
+/*solving POROSITY*/
+
+        
+//pIter=p;
+
+//phi=phiOld+cr*phiOld*(p-pOld);
+
+        
+//plot(phi, fill=1, value=1, dim=3, wait=1);
+    
+//phiIter=phi;
+
 SwOld = Sw;
 p=pOld;
+
 phi=phiOld;
        
 cout<<"time = "<<t/3600<<endl;

@@ -11,7 +11,7 @@ real yMax=10;
 real Rwell=0.1;
  
 
-int n=50; /*number of elements along a boundary*/
+int n=80; /*number of elements along a boundary*/
 
 int labelB=1;
 int labelR=2;

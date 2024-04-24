@@ -12,6 +12,7 @@ fespace Vh(Th, P1);
 Vh 
     p, /*unknown pressure at k+1 within n+1 timestep*/
     pOld, /*known pressure at previous timestep n*/
+    pIter,
     
     xi, /*weighting function for pressure*/
     vnorm,
@@ -39,6 +40,7 @@ hsize; /*element size*/
 
 pOld = pInit; /*initialization of pressure*/
 
+pIter = pInit;
 
 
 p=pOld;
