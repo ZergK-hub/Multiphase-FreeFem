@@ -40,6 +40,8 @@ cout<<"Min Element Size =============== "<<hsize[].min<<endl;
 
 savevtk("./num/sol0.vtu",Th, p,SwOld,phi,dataname="p Sw phi", order=order);
 
+Vh1 lamTf, fWf, fWCDf;
+
 while (t < tMax){
 
 
@@ -55,7 +57,7 @@ while (t < tMax){
 
     int cycle=0;
 
-    while (relSwError>1e-7){
+    while (relSwError>3e-5){
 
         load "MUMPS_seq"
 
@@ -80,7 +82,7 @@ while (t < tMax){
             p[]=Ad^-1*RHSd;
             cout<<"Pressure solution time: "<<clock()-cpu<<endl;
 
-            phi=phi0+cr*phi0*(p-pOld);
+            phi=phiOld+cr*phiIter*(p-pOld);
 
             relPhiError=
             int2d(Th)(abs(phi-phiIter)) / int2d(Th)(abs(phi));
@@ -104,7 +106,7 @@ while (t < tMax){
 
        //plot(vnorm, wait=1,fill=1, value=1, dim=3, cmm="vnorm");
 
-       multeps=epsilon*vnorm*hsize;
+       multeps=epsilon;//*vnorm*hsize;
 
        //plot(multeps, dim=3, value=1, wait=1, fill=1);
 
@@ -115,6 +117,10 @@ while (t < tMax){
         
 
         matrix A;
+
+        matrix A1;
+
+        matrix A2;
 
         matrix At;
         
@@ -143,11 +149,43 @@ while (t < tMax){
         else{
 
             cpu=clock();
-            mult1=K*lambdaT(SwIter)*fW(SwIter);
 
-            mult2=K*lambdaT(SwIter)*fWCoreyDerivative(SwIter);
+            lamTf=lambdaT(SwIter);
+            fWf=fW(SwIter);
+            fWCDf=fWCoreyDerivative(SwIter);
+
+            real[int] lamTv=lamTf[];
+            real[int] fWv=fWf[];
+            real[int] fWCDv=fWCDf[];
+            real [int] mult1v(Vh1.ndof);
+            real [int] mult2v(Vh1.ndof);
+
+            for (int el=0;el<Vh1.ndof;el++)
+            {
+                mult1v[el]=K*(lamTv[el]*fWv[el]);
+ 
+                mult2v[el]=K*(lamTv[el]*fWCDv[el]);
+
+            }
             
-            A=TransportBiLinear(Vh1,Vh1);
+
+            mult1[]=mult1v;
+            mult2[]=mult2v;
+
+            //mult1=K*lambdaT(SwIter)*fW(SwIter);
+
+            //mult2=K*lambdaT(SwIter)*fWCoreyDerivative(SwIter);
+            cout<<"Mult1_2  gen time: "<<clock()-cpu<<endl;
+            cpu=clock();
+            A1=TransportBiLinear1(Vh1,Vh1);
+
+            cout<<"Matrix A1 gen time: "<<clock()-cpu<<endl;
+            cpu=clock();
+            A2=TransportBiLinear2(Vh1,Vh1);
+            cout<<"Matrix A2 gen time: "<<clock()-cpu<<endl;
+            //A=TransportBiLinear(Vh1,Vh1);
+            cpu=clock();
+            A=A1+A2;
        
             cout<<"Transport Matrix gen time: "<<clock()-cpu<<endl;
             cpu=clock();
@@ -226,9 +264,9 @@ if (cycle>0)
 //phiIter=phi;
 
 SwOld = Sw;
-p=pOld;
+pOld=p;
 
-phi=phiOld;
+phiOld=phi;
        
 cout<<"time = "<<t/3600<<endl;
 

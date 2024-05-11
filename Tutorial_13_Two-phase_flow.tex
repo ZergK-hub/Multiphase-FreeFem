@@ -74,8 +74,8 @@ $H$~---~ширина расчетной области [м].
 Уравнения двухфазного течения в породе включают в себя уравнения для переноса воды и нефти
 \begin{equation}\label{eq:egor_common_equation_multiphase_rho}
 \begin{split}
-	\pd{(S_w \phi \rho_w)}{t} + \dv(\rho_w \bm{v}_{rw})    &= - \rho^{st}_w q_w, \quad \bm{v}_{rw}=-\frac{K k_{rw}}{\mu_w}\nabla p_w,\\
-	\pd{(S_o \phi \rho_o)}{t} + \dv(\rho_o \bm{v}_{ro})  &= - \rho^{st}_o q_o, \quad \bm{v}_{ro}=-\frac{K k_{ro}}{\mu_o}\nabla p_o.
+	\pd{(S_w \phi \rho_w)}{t} + \dv(\rho_w \bm{v}_{rw})    &=  \rho_w q_w, \quad \bm{v}_{rw}=-\frac{K k_{rw}}{\mu_w}\nabla p_w,\\
+	\pd{(S_o \phi \rho_o)}{t} + \dv(\rho_o \bm{v}_{ro})  &=  \rhoы_o q_o, \quad \bm{v}_{ro}=-\frac{K k_{ro}}{\mu_o}\nabla p_o.
 \end{split}
 \end{equation}
 
@@ -144,9 +144,9 @@ c_\alpha = \frac{1}{\rho_\alpha} \pd{\rho_\alpha}{p_\alpha} = B_\alpha \pd{(1 / 
 	c_t= c_r + c_w  S_w + c_o (1-S_w)
 \end{equation}
 где~---~ $c_r$, $c_w$, $c_o$ сжимаемости пор  воды и нефти соответственно.
-Уравнение на насыщенность воды запишется в виде
+Уравнение на насыщенность воды запишется в виде (см. \ref{transport_eq_sub})
 \begin{equation}\label{eq:star_common_equation_multiphase_satur}
-	  \phi \pd{S_w}{t} + S_w\phi\left(c_r + c_w \right)\pd{p}{t} + \dv\, \left( -\frac{K k_{rw}}{\mu_w}\nabla p \right) = 
+	  \phi \pd{S_w}{t} + S_w\phi^0\left(c_r + c_w \right)\pd{p}{t} + \dv\, \left( -\frac{K k_{rw}}{\mu_w}\nabla p \right) = 
 	  q_w.
 \end{equation}
 
@@ -307,15 +307,58 @@ c_\alpha = \frac{1}{\rho_\alpha} \pd{\rho_\alpha}{p_\alpha} = B_\alpha \pd{(1 / 
 с условиями Дирихле) к неизвестным. В этом случае используется метод штрафных функций, который
 интегрирован во FreeFem++ как оператор $\mathbf{on}$. 
 
-\subsubsection{Уравнение переноса водонасыщенности}
+\subsubsection{Уравнение переноса водонасыщенности}\label{transport_eq_sub}
+Для вывода уравнения на насыщенность рассмотрим первое уравнение системы \ref{eq:egor_common_equation_multiphase_rho}.
+Воспользуемся правилом производной произведения для слагаемого с производной по времени
+\begin{equation}\label{eq:chain_rule}
+\pd{(S_w \phi \rho_w)}{t}=\phi \rho_w \pd{S_w}{t}+S_w \rho_w \pd{\phi}{t}+S_w \phi \pd{\rho_w}{t}
+\end{equation}
+По определению, изотермическая сжимаемость фазы $l$ задается как
+\begin{equation}\label{eq:isothermal_compressibility}
+c_l=\frac{1}{\rho_l}\pd{\rho_l}{p} |_{T}
+\end{equation}
+Зависимость пористости от давления обычно задается в виде линейной функции:
+\begin{equation}\label{eq:porosity_vs_p}
+\phi = \phi^0 [1+c_r (p-p^0)],
+\end{equation}
+где $p^0$ ~---~ опорное давление, при котором определена пористость $\phi^0$.
+В качестве опорного давления выбирается либо атмосферное давление, либо среднее
+пластовое давление на данном месторождении.\\
+Правило производной сложной функции пористости $\phi=\phi(p)$ задается выражением
+\begin{equation}\label{eq:derivative_phi}
+\pd{\phi}{t}=\pd{\phi}{p} \pd{p}{t}.
+\end{equation}
+Зависимость плотности от давления для слабосжимаемой жидкости
+\begin{equation}\label{eq_rho_vs_p}
+\rho_l=\rho^0_l[1+c_l(p-p^0)].
+\end{equation}
+Объемный коэффициент фазы $l$ (связанный с плотностью фазы) задается как 
+\begin{equation}\label{eq:FVF}
+B_l=\frac{\rho_{lsc}}{\rho_l}=\frac{B^0_l}{1+c_l(p-p^0)},
+\end{equation}
+причем $sc$ - standard conditions.\\
+Правило производной сложной функции плотноти $\rho=\rho(p)$ определяется как
+\begin{equation}\label{eq:derivative_rho}
+\pd{\rho}{t}=\pd{\rho}{p} \pd{p}{t}.
+\end{equation}
+Подставляя в уравнение \ref{eq:chain_rule} выражения \ref{eq:porosity_vs_p}, \ref{eq:derivative_phi},\ref{eq_rho_vs_p}, \ref{eq:derivative_rho} и 
+поделив на $\rho_w$ получим
+\begin{multline}\label{eq:ext_chain_rule}
+\pd{(S_w \phi \rho_w)}{t}=\phi \pd{S_w}{t}+ S_w \phi^0 c_r \pd{p}{t}+ S_w \phi c_w \pd{p}{t} = \\
+\phi \pd{S_w}{t}+S_w(\phi^0 c_r + \phi^0 c_w + c_w c_r \phi^0 (p-p^0))\pd{p}{t}
+\end{multline}
+Если учесть, что $c_w c_r \rightarrow 0$
 
+\begin{equation}
+\pd{(S_w \phi \rho_w)}{t} \approx \phi \pd{S_w}{t}+S_w \phi^0 (c_r+c_w)\pd{p}{t}
+\end{equation}
 Если применить стандартный прием метода конечных элементов к исходному уравнению на водонасыщенность, то известно, 
 что получится неустойчивая разностная схема. 
 Поэтому к исходному уравнению на водонасыщенность добавим член с искусственной диффузией. 
 С физической точки зрения данное слагаемое появляется из-за присуствия капиллярных сил. В итоге получим 
 
 \begin{equation}\label{eq:satur_diffusion}
-	\phi \pd{S_w}{t} + S_w\phi\left(c_r + c_w \right)\pd{p}{t} + \dv\, \left( f_w \bq_t {- \color{blue}\varepsilon \nabla S_w} \right) = 
+	\phi \pd{S_w}{t} + S_w\phi_0\left(c_r + c_w \right)\pd{p}{t} + \dv\, \left( f_w \bq_t {- \color{blue}\varepsilon \nabla S_w} \right) = 
 	q_w.
 \end{equation}
 На практике параметр $\varepsilon$ может иметь зависимость от размера сетки и/или от 
@@ -341,8 +384,8 @@ $P_{prod}=\{L,H\}$ условий не наложено, а значит сла�
 расчетной области (за исключением двух точек $P_{inj}$ и $P_{prod}$) получим
 
 \begin{multline}
-	\displaystyle 0=\int\limits_\Omega  [\left(\phi \pd{S_w}{t} + S_w\phi\left(c_r + c_w \right)\pd{p}{t} \right)\,\psi + \dv\, \left( f_w \bq_t - \varepsilon \nabla S_w \right)\, \psi] \,dx dy = \\ 
-	\int\limits_\Omega[\left(\phi \pd{S_w}{t} + S_w\phi\left(c_r + c_w \right)\pd{p}{t} \right)\,\psi -  f_w \bq_t \cdot \nabla \psi +  \varepsilon \nabla S_w \cdot \nabla \psi] \,dx dy \\
+	\displaystyle 0=\int\limits_\Omega  [\left(\phi \pd{S_w}{t} + S_w\phi_0\left(c_r + c_w \right)\pd{p}{t} \right)\,\psi + \dv\, \left( f_w \bq_t - \varepsilon \nabla S_w \right)\, \psi] \,dx dy = \\ 
+	\int\limits_\Omega[\left(\phi \pd{S_w}{t} + S_w\phi_0\left(c_r + c_w \right)\pd{p}{t} \right)\,\psi -  f_w \bq_t \cdot \nabla \psi +  \varepsilon \nabla S_w \cdot \nabla \psi] \,dx dy \\
 	+\int\limits_{\Gamma_{prod}} f_w \bq_t \cdot \bn \,\psi \, ds
 \end{multline}
 
@@ -395,7 +438,7 @@ $\lambda_t = \lambda_t (S_w^{n+1, k})$ поскольку она тоже зав
 Уравнения на водонасыщенность запишутся в следующем виде:
 \begin{multline}\label{eq:saturation_num}
 	\int\limits_\Omega \left(\phi^{n+1,k} {\color{blue}S_w^{n+1,k+1}} 
-	+ {\color{blue}S_w^{n+1,k+1}}\phi^{n+1,k}\left(c_r + c_w \right)({\color{red}p^{n+1,k+1}} - p^n)  \right)\,\psi \,dx dy \\
+	+ {\color{blue}S_w^{n+1,k+1}}\phi^{0}\left(c_r + c_w \right)({\color{red}p^{n+1,k+1}} - p^n)  \right)\,\psi \,dx dy \\
 	+ \Delta t\int\limits_\Omega -f_w ({\color{blue}S_w^{n+1,k+1}}) \bq_t^{n+1, k+1} \cdot \nabla \psi +  \varepsilon \nabla {\color{blue}S_w^{n+1,k+1}} \cdot \nabla \psi \,dx dy \\
 	-\int\limits_\Omega \phi^{n+1,k} S_w^{n} \,\psi \,dx dy
 	+\Delta t\int\limits_{\Gamma_{prod}} f_w({\color{blue}S_w^{n+1,k+1}}) \bq_t^{n+1, k+1} \cdot \bn \,\psi \, ds = 0.
@@ -405,19 +448,20 @@ $\lambda_t = \lambda_t (S_w^{n+1, k})$ поскольку она тоже зав
 то можно получить окончательную формулировку, используемую в практических расчетах:
 \begin{multline}\label{eq:saturation_num_linear}
 	\int\limits_\Omega \left(\phi^{n+1,k} {\color{blue}S_w^{n+1,k+1}}
-	+ {\color{blue}S_w^{n+1,k+1}}\phi^{n+1,k}\left(c_r + c_w \right)({\color{red}p^{n+1,k+1}} - p^n)  \right)\,\psi \,dx dy \\
+	+ {\color{blue}S_w^{n+1,k+1}}\phi^{0}\left(c_r + c_w \right)({\color{red}p^{n+1,k+1}} - p^n)  \right)\,\psi \,dx dy \\
 	+ \Delta t\int\limits_\Omega -\left[f_w(S_w^{n+1, k}) + \pd{f_w}{S_w}\Bigl|_{S_w^{n+1, k}}\Bigr. \left({\color{blue} S_w^{n+1, k+1}} - S_w^{n+1, k} \right) \right] \bq_t^{n+1, k+1} \cdot \nabla \psi \,dx dy\\
 	+ \Delta t\int\limits_\Omega \varepsilon \nabla {\color{blue}S_w^{n+1,k+1}} \cdot \nabla \psi \,dx dy 
 	-\int\limits_\Omega \phi^{n+1,k} S_w^{n} \,\psi \,dx dy \\
 	+\Delta t\int\limits_{\Gamma_{prod}} \left[f_w(S_w^{n+1, k}) + \pd{f_w}{S_w}\Bigl|_{S_w^{n+1, k}}\Bigr. \left({\color{blue} S_w^{n+1, k+1}} - S_w^{n+1, k} \right) \right] \bq_t^{n+1, k+1} \cdot \bn \,\psi \, ds = 0.
 \end{multline}
 В полученном линеаризованном выражении \refeq{eq:saturation_num_linear} синим цветом отмечена искомая водонасыщенность.\\
-Далее, после нахождения $\color{red}p^{n+1, k+1}$ из \refeq{eq:FiltrationLinear} уравнение на пористость \refeq{eq:porosity_evolution} можно 
-заменить на численную аппроксимацию вида:
-\begin{equation}
-	\phi^{n+1, k+1} = \phi^n + c_r \phi^{n+1, k} (p^{n+1, k+1} - p^n).
-\end{equation}
 
+Далее, после нахождения $\color{red}p^{n+1, k+1}$ из \refeq{eq:FiltrationLinear} применяется уравнение на пористость \refeq{eq:porosity_vs_p}.\\
+
+Первое слагаемое в \refeq{eq:saturation_num_linear} содержит разность давлений между шагами
+по времени. Если шаг по времени становится достаточно большим, то указанная разность тоже может стать большой,
+что будет приводить к неустойчивости расчета. Это особенно проявляется на старте расчета когда давление
+в скважине скачком меняется от среднего пластового до заданного забойного.
 
 \subsection{Особенности реализации решения средствами пакета FreeFem++}
 

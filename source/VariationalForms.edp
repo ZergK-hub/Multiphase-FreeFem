@@ -50,8 +50,32 @@ varf TransportBiLinear(Sw, psi) =
 
     int2d(Th)(
         
-        ((1-theta)*phiIter+theta*phiIter*(cr+cw)*(p-pOld))*Sw*psi
+        (phiIter)*Sw*psi
+        +(phi0*(cr+cw)*p)*Sw*psi
+        -(phi0*(cr+cw)*pOld)*Sw*psi
         /*phiIter*Sw*psi*/
+    )
+   +int2d(Th)(
+        +dt*mult2*Sw*grad(p)'*grad(psi)
+        +dt*multeps*grad(Sw)'*grad(psi)
+    )
+    -int1d(Th,labelProd)(
+        dt*mult2*Sw*(dx(p)*N.x*psi+dy(p)*N.y*psi)
+    )
+    +on(labelInj,Sw=SwInj)
+    ;
+
+varf TransportBiLinear1(Sw, psi) =
+
+    int2d(Th)(
+        
+        (phiIter)*Sw*psi
+        +(phi0*(cr+cw)*p)*Sw*psi
+        -(phi0*(cr+cw)*pOld)*Sw*psi
+        /*phiIter*Sw*psi*/
+    );
+varf TransportBiLinear2(Sw, psi) =
+   int2d(Th)(
         +dt*mult2*Sw*grad(p)'*grad(psi)
         +dt*multeps*grad(Sw)'*grad(psi)
     )

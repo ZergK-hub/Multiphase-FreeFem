@@ -2,13 +2,13 @@
 fespace Vh0(Th,P0);
 Vh0 h0size;
 
-fespace VhP(Th,P0);
+fespace VhP(Th,P1);
 VhP 
     phi,
     phiIter, /*known porosity at k within n+1 timestep*/ 
     phiOld; /*known porosity at previous timestep n*/
 
-fespace Vh(Th, P1);
+fespace Vh(Th, P2);
 Vh 
     p, /*unknown pressure at k+1 within n+1 timestep*/
     pOld, /*known pressure at previous timestep n*/
@@ -22,7 +22,7 @@ Vh
 
 
 
-fespace Vh1(Th,P1);
+fespace Vh1(Th,P2);
 Vh1
 Sw, /*unknown water saturation at k+1 within n+1 timestep*/
 SwOld, /*known water saturation at previous timestep n*/

@@ -26,7 +26,7 @@ real qProd=-0.25*Qprod/h;
 
 real Pinj = 300.0*atm2Pa; /*[Pa] injection well pressure*/
 
-real Pprod = 40.0*atm2Pa; /*[Pa] production well pressure*/
+real Pprod = 200.0*atm2Pa; /*[Pa] production well pressure*/
 
 /*Compressibilities 
 L.P.Dake,"Fundamental of reservoir engineering", 1978, p.138 */
@@ -77,13 +77,13 @@ real SwInj=1-Soc;
 
 //real dt = 0.001*1e4 / 2/2; /*[s], Timestep*/
 
-real dt= 1800;
+real dt= 60;
 
 real tMax = 3*86400;
 
 /*artificial diffusivity*/
 
-real epsilon =1e-3;
+real epsilon =1e-6;
 
 real theta=0.1;
 
