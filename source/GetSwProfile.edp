@@ -1,0 +1,12 @@
+
+cout << "Generate Sw profile" << endl;
+
+
+{ofstream f("./SwData/Sw"+it+".txt");
+for (int i = 0; i < ArcLen; i++){
+  
+  
+   f<<X(i)<<"\t"<<Y(i)<< "\t"<< Sw(X(i),Y(i))<<"\n";
+   }
+    
+}

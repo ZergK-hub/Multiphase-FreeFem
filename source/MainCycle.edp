@@ -82,7 +82,7 @@ while (t < tMax){
             p[]=Ad^-1*RHSd;
             cout<<"Pressure solution time: "<<clock()-cpu<<endl;
 
-            phi=phiOld+cr*phiIter*(p-pOld);
+            phi=phi0+cr*phi0*(p-pInit);
 
             relPhiError=
             int2d(Th)(abs(phi-phiIter)) / int2d(Th)(abs(phi));
@@ -242,9 +242,11 @@ while (t < tMax){
 if (cycle>0)
  {dt=dt*cycle*2;}  
 
-    plot(Sw, wait=0, value=1, fill=1, cmm="Saturation");
+plot(Sw, wait=1, value=1, fill=1, cmm="Saturation");
 
-    savevtk("./num/sol"+it+".vtu",Th, p,Sw,phi,dataname="p Sw phi", order=order);
+include "GetSwProfile.edp"
+
+savevtk("./num/sol"+it+".vtu",Th, p,Sw,phi,dataname="p Sw phi", order=order);
 
 
 
@@ -254,20 +256,22 @@ if (cycle>0)
 /*solving POROSITY*/
 
         
-//pIter=p;
+pIter=p;
 
-//phi=phiOld+cr*phiOld*(p-pOld);
+//phi=phi0+cr*phi0*(p-pInit);
+
 
         
 //plot(phi, fill=1, value=1, dim=3, wait=1);
+
+plot(p, fill=1, value=1, dim=3, wait=1, cmm="Pressure");
     
 //phiIter=phi;
 
 SwOld = Sw;
 pOld=p;
 
-phiOld=phi;
-       
+     
 cout<<"time = "<<t/3600<<endl;
 
 t=t+dt;

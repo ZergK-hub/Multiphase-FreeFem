@@ -45,7 +45,7 @@ cout << endl;
     
 }
 
-//exec("python ./Triang.py");
+exec("python ./Triang.py");
 
 int NN=Vh.ndof;
 

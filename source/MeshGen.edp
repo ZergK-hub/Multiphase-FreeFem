@@ -1,5 +1,5 @@
 int PointInj=0; /*point injection or well boundary injection*/
-int SplitLevel=1; /*how many split levels do you want? Choose from [1,2,3,4,5]*/
+int SplitLevel=2; /*how many split levels do you want? Choose from [1,2,3,4,5]*/
 int WellMesh=5;
 
 real xMin=0;
@@ -9,7 +9,18 @@ real yMin=0;
 real yMax=10;
 
 real Rwell=0.1;
- 
+
+int ArcLen=1000; /*size of an arc where values are defined to be plotted along this arc*/
+real [int] X(ArcLen);
+real [int] Y(ArcLen);
+real [int] Arc(ArcLen);
+real step = (sqrt(2.0)*xMax-2*Rwell)/ArcLen; /*square domain is assumed*/
+
+for (int i = 0; i < ArcLen; i++){
+    Arc[i]=i*step;
+    X[i]=Arc[i]*sqrt(2.0)/2.0;
+    Y[i]=Arc[i]*sqrt(2.0)/2.0;
+} 
 
 int n=40; /*number of elements along a boundary*/
 
@@ -20,7 +31,7 @@ int labelT=4;
 int labelL=5;
 int labelInj=6;
 
-real beta=3;
+real beta=5;
 
 border GammaB(t=0,1){
 
